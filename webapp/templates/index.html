@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkhaus Übersicht</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Parkhaus Übersicht</h1>
+
+    <!-- Obergeschoss (OG) -->
+    <div class="parkdeck">
+        <h2>Obergeschoss (OG)</h2>
+        <div class="parkdeck-grid">
+            {% for platz in parkplaetze %}
+                {% if platz.etage == 1 %}
+                    <div class="parkplatz-karte">
+                        <h3>Parkplatz {{ platz.id }}</h3>
+                        <p>Status:
+                            {% if platz.status %}
+                                <span class="status frei">Frei</span>
+                                <a href="#" onclick="park('{{ platz.etage }}', '{{ platz.id }}')">Parken</a>
+                            {% else %}
+                                <span class="status belegt">Belegt</span>
+                                <a href="#" onclick="leave('{{ platz.etage }}', '{{ platz.id }}')">Verlassen</a>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="fahrweg"></div>
+        </div>
+    </div>
+
+    <!-- Erdgeschoss (EG) -->
+    <div class="parkdeck">
+        <h2>Erdgeschoss (EG)</h2>
+        <div class="parkdeck-grid">
+            {% for platz in parkplaetze %}
+                {% if platz.etage == 0 %}
+                    <div class="parkplatz-karte">
+                        <h3>Parkplatz {{ platz.id }}</h3>
+                        <p>Status:
+                            {% if platz.status %}
+                                <span class="status frei">Frei</span>
+                                <a href="#" onclick="park('{{ platz.etage }}', '{{ platz.id }}')">Parken</a>
+                            {% else %}
+                                <span class="status belegt">Belegt</span>
+                                <a href="#" onclick="leave('{{ platz.etage }}', '{{ platz.id }}')">Verlassen</a>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="fahrweg"></div>
+        </div>
+    </div>
+
+    <div class="add-parkplatz-form">
+        <h3>Neuen Parkplatz hinzufügen</h3>
+        <form id="addParkplatzForm">
+            <label for="etage">Etage:</label>
+            <input type="number" id="etage" name="etage" required>
+
+            <button type="submit">Parkplatz hinzufügen</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
