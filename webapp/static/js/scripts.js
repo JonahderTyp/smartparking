@@ -1,59 +1,57 @@
-// Funktion zum Belegen eines Parkplatzes
-function park(etage, id) {
-    fetch('/park', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ etage: etage, id: id }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        location.reload(); // Seite neu laden nach erfolgreicher Aktion
-    })
-    .catch(error => console.error('Error:', error));
+// Funktion zum Abfragen des Parkplatzstatus
+function fetchStatus() {
+    fetch('/api/status')  // API, um den Status aller Parkplätze zu erhalten
+        .then(response => response.json())
+        .then(data => {
+            Object.keys(data).forEach((platzId) => {
+                const statusElement = document.getElementById(`status-${platzId}`);
+                const parkButton = document.querySelector(`#platz-${platzId} .park-button`);
+                const leaveButton = document.querySelector(`#platz-${platzId} .leave-button`);
+
+                if (data[platzId] === "besetzt") {
+                    statusElement.textContent = 'Besetzt';
+                    statusElement.classList.add('besetzt');
+                    statusElement.classList.remove('frei');
+
+                    // "Parken"-Button deaktivieren, "Verlassen"-Button aktivieren
+                    parkButton.disabled = true;
+                    parkButton.classList.remove('aktiv');
+                    leaveButton.disabled = false;
+                    leaveButton.classList.add('aktiv');
+                } else {
+                    statusElement.textContent = 'Frei';
+                    statusElement.classList.remove('besetzt');
+                    statusElement.classList.add('frei');
+
+                    // "Parken"-Button aktivieren, "Verlassen"-Button deaktivieren
+                    parkButton.disabled = false;
+                    parkButton.classList.add('aktiv');
+                    leaveButton.disabled = true;
+                    leaveButton.classList.remove('aktiv');
+                }
+            });
+        });
 }
 
-// Funktion zum Freigeben eines Parkplatzes
-function leave(etage, id) {
-    fetch('/leave', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ etage: etage, id: id}),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        location.reload(); // Seite neu laden nach erfolgreicher Aktion
-    })
-    .catch(error => console.error('Error:', error));
+// API-Aufruf zum Parken
+function park(platzId) {
+    fetch(`/api/park/${platzId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            fetchStatus();  // Den Status nach dem Parken sofort aktualisieren
+        });
 }
 
-// Event-Listener für das Hinzufügen eines neuen Parkplatzes
-document.getElementById('addParkplatzForm').addEventListener('submit', function(event) {
-    event.preventDefault();  // Verhindert das Neuladen der Seite
+// API-Aufruf zum Verlassen
+function leave(platzId) {
+    fetch(`/api/leave/${platzId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            fetchStatus();  // Den Status nach dem Verlassen sofort aktualisieren
+        });
+}
 
-    // Werte aus dem Formular
-    const etage = document.getElementById('etage').value;
-
-    // POST-Anfrage an die API zum Hinzufügen eines neuen Parkplatzes
-    fetch('/api/add_parkplatz', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            etage: etage
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(`Neuer Parkplatz mit ID ${data.id} hinzugefügt!`);  // Erfolgsmeldung anzeigen
-        location.reload();  // Seite neu laden, um den neuen Parkplatz anzuzeigen
-    })
-    .catch(error => console.error('Error:', error));
-});
-
+// Status alle 1 Sekunde aktualisieren
+setInterval(fetchStatus, 1000);
