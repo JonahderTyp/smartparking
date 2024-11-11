@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Layout des Parkhauses */
+.parkhaus-layout {
+    display: grid;
+    grid-template-columns: 100px repeat(2, 200px) 100px repeat(2, 200px) 100px; /* 4 Spalten */
+    grid-template-rows: 100px 300px 100px 50px; /* Reihen für Parkplätze und Einfahrt */
+    gap: 10px;
+    justify-content: center; /* Zentriere das Grid-Layout horizontal */
+}
+
+/* Parkplatz Karte */
+.parkplatz-karte {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.parkplatz-karte h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.parkplatz-karte p {
+    margin: 10px 0;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status.frei {
+    color: green;
+}
+
+.status.besetzt {
+    color: red;
+}
+
+/* Fahrweg */
+.fahrweg {
+    background-color: #e0e0e0;
+    color: #333;
+    font-size: 18px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: -1;
+}
+
+/* Einfahrt */
+.einfahrt {
+    background-color: #d1ecf1;
+    color: #333;
+    font-size: 18px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+}
+
+/* Pfeile */
+.pfeil-links, .pfeil-rechts {
+    font-size: 24px;
+    text-align: center;
+    line-height: 100px;  /* Höhe der Parkplätze */
+    z-index: 1;
+}
+
+/* Allgemeine Button-Stile */
+button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.6; /* Standard: halb-transparent, wenn deaktiviert */
+}
+
+/* Stile für den aktiven "Parken"-Button (grün) */
+button.park-button.aktiv {
+    background-color: #28a745;  /* Grün */
+    opacity: 1;
+}
+
+button.park-button.aktiv:hover {
+    background-color: #218838; /* Dunkleres Grün beim Hover */
+}
+
+/* Stile für den aktiven "Verlassen"-Button (rot) */
+button.leave-button.aktiv {
+    background-color: #dc3545;  /* Rot, wenn aktiv */
+    opacity: 1;
+}
+
+/* "Verlassen"-Button Hover-Effekt */
+button.leave-button.aktiv:hover {
+    background-color: #c82333; /* Dunkleres Rot beim Hover */
+}
+
+button:disabled {
+    cursor: not-allowed;
+    background-color: #ccc;  /* Grau, wenn deaktiviert */
+    opacity: 0.6;
+}
+
+button:hover:not(:disabled) {
+    opacity: 1;
+}
