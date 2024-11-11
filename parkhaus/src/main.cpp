@@ -1,18 +1,92 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
-// put function declarations here:
-int myFunction(int, int);
+const char* ssid = "Dein_SSID";           // WLAN-SSID
+const char* password = "Dein_Passwort";   // WLAN-Passwort
+const String serverUrl = "http://dein-server/api/updateStatus";  // URL der API-Schnittstelle
+
+// Ultraschallsensoren Pins (jeweils für 4 Parkplätze)
+const int trigPins[] = {5, 18, 19, 21};   // Trig-Pins für Sensoren
+const int echoPins[] = {23, 22, 2, 4};    // Echo-Pins für Sensoren
+const int numSensors = 4;                 // Anzahl der Sensoren
+const long schwellwert = 50;              // Schwellwert in cm für "besetzt"
+
+long messEntfernung(int trigPin, int echoPin) {
+    // Trigger-Puls senden
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+
+    // Dauer des Echos messen
+    long dauer = pulseIn(echoPin, HIGH);
+
+    // Entfernung berechnen (Schallgeschwindigkeit = 34300 cm/s)
+    long entfernung = dauer * 0.034 / 2;
+    return entfernung;
+}
+
+// Funktion zum Senden des Parkplatzstatus an den Server
+void sendStatusToServer(int platzId, bool isOccupied) {
+    if (WiFi.status() == WL_CONNECTED) {
+        HTTPClient http;
+        http.begin(serverUrl);
+        http.addHeader("Content-Type", "application/json");
+
+        // JSON-Daten mit Parkplatz-Status
+        String postData = "{\"parkplatz\": " + String(platzId) + ", \"status\": \"" + String(isOccupied ? "besetzt" : "frei") + "\"}";
+
+        int httpResponseCode = http.POST(postData);
+
+        if (httpResponseCode > 0) {
+            String response = http.getString();
+            Serial.println(httpResponseCode);
+            Serial.println(response);
+        } else {
+            Serial.println("Fehler beim Senden des POST-Requests");
+        }
+        http.end();
+    } else {
+        Serial.println("Keine WLAN-Verbindung");
+    }
+}
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+    Serial.begin(115200);
+
+    // WLAN-Verbindung herstellen
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.println("Verbindung zu WiFi...");
+    }
+    Serial.println("Mit WiFi verbunden");
+
+    // Ultraschallsensor-Pins initialisieren
+    for (int i = 0; i < numSensors; i++) {
+        pinMode(trigPins[i], OUTPUT);
+        pinMode(echoPins[i], INPUT);
+    }
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+    for (int i = 0; i < numSensors; i++) {
+        // Entfernung messen
+        long entfernung = messEntfernung(trigPins[i], echoPins[i]);
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+        // Überprüfen, ob der Parkplatz besetzt oder frei ist
+        bool besetzt = (entfernung < schwellwert);
+        Serial.print("Parkplatz ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.println(besetzt ? "besetzt" : "frei");
+
+        // Status an den Server senden
+        sendStatusToServer(i + 1, besetzt);
+    }
+
+    // Warten für 1 Sekunde, bevor die nächsten Messungen erfolgen
+    delay(1000);
 }
