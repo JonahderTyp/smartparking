@@ -13,7 +13,7 @@ void activate_col(uint8_t col) { digitalWrite(cols[col], LOW); }
 
 void deactivate_col(uint8_t col) { digitalWrite(cols[col], HIGH); }
 
-void display_matrix(bool matrix[8][8], uint16_t loops = 64) {
+void display_matrix(bool matrix[8][8], uint16_t loops = 4) {
   for (uint16_t i = 0; i < loops; i++) {
     for (uint8_t row = 0; row < 8; row++) {
       activate_row(row);
@@ -54,6 +54,9 @@ bool fill[8][8] = {{1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1},
                    {1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1}};
 
 void setup() {
+  pinMode(A4, INPUT);
+  pinMode(A5, INPUT);
+
   for (auto row : rows) {
     pinMode(row, OUTPUT);
     digitalWrite(row, HIGH);
@@ -63,9 +66,19 @@ void setup() {
     pinMode(col, OUTPUT);
     digitalWrite(col, LOW);
   }
+
+  display_matrix(fill, 16);
 }
 
 void loop() {
-  display_matrix(arrow_left_down);
-  delay(1000);
+  bool p1 = digitalRead(A4);
+  bool p2 = digitalRead(A5);
+
+  if (p1 && p2) {
+    display_matrix(cross);
+  } else if (p1) {
+    display_matrix(arrow_left_down);
+  } else if (p2) {
+    display_matrix(arrow_right_down);
+  }
 }
