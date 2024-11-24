@@ -1,20 +1,33 @@
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
+#include <ESP32Servo.h>
 #include <Ultrasonic.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <coap-simple.h>
 
+#include "button/button.h"
 #include "config.h"
+#include "timer.h"
 
 IPAddress ip;
 
-#define LED_PIN 2
+Ultrasonic u1(US_1_TRIG, US_1_ECHO);
+Ultrasonic u2(US_2_TRIG, US_2_ECHO);
+Ultrasonic u3(US_3_TRIG, US_3_ECHO);
+Ultrasonic u4(US_4_TRIG, US_4_ECHO);
 
-Ultrasonic u1(22, 23);
-Ultrasonic u2(24, 25);
-Ultrasonic u3(26, 27);
-Ultrasonic u4(28, 29);
+Adafruit_NeoPixel strip(4, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+Servo myservo;
+
+Timer myTimer(2000);
+Timer usTimer(100);
+
+WiFiUDP udp;
+Coap coap(udp);
+
+Button button(BTN_PIN, 1000);
 
 uint32_t last_millis = 0;
 
@@ -24,32 +37,37 @@ bool p3 = false;
 bool p4 = false;
 
 void checkBays() {
-  if (u1.read(CM) < 10) {
+  unsigned int t = 8;
+
+  delay(10);
+  unsigned int u1d = u1.read(CM);
+  delay(10);
+  unsigned int u2d = u2.read(CM);
+  delay(10);
+  unsigned int u3d = u3.read(CM);
+  delay(10);
+  unsigned int u4d = u4.read(CM);
+
+  if (u1d <= t)
     p1 = true;
-  } else {
+  else
     p1 = false;
-  }
 
-  if (u2.read(CM) < 10) {
+  if (u2d <= t)
     p2 = true;
-  } else {
+  else
     p2 = false;
-  }
 
-  if (u3.read(CM) < 10) {
+  if (u3d <= t)
     p3 = true;
-  } else {
+  else
     p3 = false;
-  }
 
-  if (u4.read(CM) < 10) {
+  if (u4d <= t)
     p4 = true;
-  } else {
+  else
     p4 = false;
-  }
 }
-
-Adafruit_NeoPixel strip(4, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 void setBayLEDs(bool b1, bool b2, bool b3, bool b4) {
   static uint32_t used = strip.Color(255, 0, 0);
@@ -82,17 +100,33 @@ void setBayLEDs(bool b1, bool b2, bool b3, bool b4) {
   strip.show();
 }
 
-WiFiUDP udp;
-Coap coap(udp);
+void displayArrow(int dir) {
+  digitalWrite(AL_PIN, dir & 0b01);
+  digitalWrite(AR_PIN, dir & 0b10);
+}
+
+void openGate() { myservo.write(80); }
+
+void closeGate() { myservo.write(170); }
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Initializing");
 
+  pinMode(AL_PIN, OUTPUT);
+  pinMode(AR_PIN, OUTPUT);
+
+  displayArrow(0b11);
+
+  myservo.attach(SERVO_PIN);
+  closeGate();
+
   strip.begin();
   strip.show();
   strip.setBrightness(50);
+  usTimer.start();
 
+#ifndef TESTING
   // Try and wait until a connection to WiFi was made
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -117,12 +151,47 @@ void setup() {
 
   // Connect CoAP client to a server
   coap.start();
+#endif
 }
 
 void loop() {
-  checkBays();
+  if (usTimer.hasElapsed()) {
+    checkBays();
+    usTimer.start();
+  }
+  int left = ((int)!p3) + ((int)!p4);
+  int right = ((int)!p1) + ((int)!p2);
   setBayLEDs(p1, p2, p3, p4);
 
+  if (left + right == 0) {
+    displayArrow(0b11);
+  } else if (!myTimer.isRunning()) {
+    displayArrow(0b00);
+  }
+
+  if (button.isShortPress()) {
+    myTimer.start();
+    if (left > right) {
+      displayArrow(0b10);
+    } else if (right > left) {
+      displayArrow(0b01);
+    } else if (left == 0 && right == 0) {
+      displayArrow(0b11);
+    } else {
+      displayArrow(0b01);
+    }
+
+    if (left + right != 0) {
+      openGate();
+    }
+  }
+
+  if (myTimer.hasElapsed()) {
+    closeGate();
+    displayArrow(0b00);
+  }
+
+#ifndef TESTING
   if (millis() - last_millis > 1000) {
     last_millis = millis();
     // Construct payload as a JSON-like string
@@ -134,8 +203,11 @@ void loop() {
     payload += "}";
 
     // Send data to the CoAP server
-    coap.put(ip, coap_port, "boolean", payload.c_str(), payload.length());
+    // coap.put(ip, coap_port, "boolean", payload.c_str(), payload.length());
   }
 
   coap.loop();  // Keep the CoAP client running
+#endif
+
+  button.handle();
 }
