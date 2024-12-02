@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from aiocoap import *
 from aiocoap.resource import *
@@ -7,8 +8,8 @@ from aiocoap.resource import *
 class BooleanResource(Resource):
     def __init__(self):
         super().__init__()
-        self.values = {"value1": False, "value2": False,
-                       "value3": False, "value4": False}
+        self.values = {"p1": False, "p2": False,
+                       "p3": True, "p4": True}
 
     async def render_put(self, request):
         payload = request.payload.decode("utf-8")
@@ -18,7 +19,8 @@ class BooleanResource(Resource):
         return Message(code=CHANGED, payload=b"Value updated.")
 
     async def render_get(self, request):
-        response = ", ".join([f"{k}={v}" for k, v in self.values.items()])
+        response = json.dumps(self.values)
+        # response = ", ".join([f"{k}={v}" for k, v in self.values.items()])
         return Message(payload=response.encode("utf-8"))
 
 

@@ -1,6 +1,6 @@
 // Funktion zum Abfragen des Parkplatzstatus
 function fetchStatus() {
-    fetch('/api/status')  // API, um den Status aller Parkplätze zu erhalten
+    fetch('/api/data')  // API, um den Status aller Parkplätze zu erhalten
         .then(response => response.json())
         .then(data => {
             Object.keys(data).forEach((platzId) => {
@@ -8,7 +8,8 @@ function fetchStatus() {
                 const parkButton = document.querySelector(`#platz-${platzId} .park-button`);
                 const leaveButton = document.querySelector(`#platz-${platzId} .leave-button`);
 
-                if (data[platzId] === "besetzt") {
+                if (data[platzId] == true) {
+                    console.log('Besetzt');
                     statusElement.textContent = 'Besetzt';
                     statusElement.classList.add('besetzt');
                     statusElement.classList.remove('frei');
@@ -19,6 +20,7 @@ function fetchStatus() {
                     leaveButton.disabled = false;
                     leaveButton.classList.add('aktiv');
                 } else {
+                    console.log('Frei');
                     statusElement.textContent = 'Frei';
                     statusElement.classList.remove('besetzt');
                     statusElement.classList.add('frei');

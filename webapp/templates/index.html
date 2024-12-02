@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parkhaus Übersicht - Ebene 1</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
     <div class="container">
         <h1>Parkhaus Übersicht - Ebene 1</h1>
@@ -18,25 +20,27 @@
             <!-- Parkplätze (links) -->
             <div class="parkplatz-karte" id="platz-1" style="grid-column: 2; grid-row: 2;">
                 <h3>Parkplatz 1</h3>
-                <p>Status: <span class="status" id="status-1">Frei</span></p>
+                <p>Status:</p>
+                <h1><span class="status" id="status-1">Frei</span></h1>
                 <button class="park-button" onclick="park(1)">Parken</button>
                 <button class="leave-button" onclick="leave(1)">Verlassen</button>
             </div>
             <div class="parkplatz-karte" id="platz-2" style="grid-column: 3; grid-row: 2;">
                 <h3>Parkplatz 2</h3>
-                <p>Status: <span class="status" id="status-2">Frei</span></p>
+                <p>Status:</p>
+                <h1><span class="status" id="status-2">Frei</span></h1>
                 <button class="park-button" onclick="park(2)">Parken</button>
                 <button class="leave-button" onclick="leave(2)">Verlassen</button>
             </div>
 
             <!-- Pfeil1 nach links -->
-            <div class="pfeil-links" style="grid-column: 2; grid-row: 1;">⬅</div>
+            <!-- <div class="pfeil-links" style="grid-column: 2; grid-row: 1;">⬅</div> -->
 
             <!-- Pfeil2 nach links -->
             <div class="pfeil-links" style="grid-column: 2; grid-row: 3;">⬅</div>
 
             <!-- Pfeil3 nach links -->
-            <div class="pfeil-links" style="grid-column: 3; grid-row: 1;">⬅</div>
+            <!-- <div class="pfeil-links" style="grid-column: 3; grid-row: 1;">⬅</div> -->
 
             <!-- Pfeil4 nach links -->
             <div class="pfeil-links" style="grid-column: 3; grid-row: 3;">⬅</div>
@@ -44,22 +48,25 @@
             <!-- Parkplätze (rechts) -->
             <div class="parkplatz-karte" id="platz-3" style="grid-column: 5; grid-row: 2;">
                 <h3>Parkplatz 3</h3>
-                <p>Status: <span class="status" id="status-3">Frei</span></p>
+                <p>Status:</p>
+                <h1><span class="status" id="status-3">Frei</span></h1>
+
                 <button class="park-button" onclick="park(3)">Parken</button>
                 <button class="leave-button" onclick="leave(3)">Verlassen</button>
             </div>
             <div class="parkplatz-karte" id="platz-4" style="grid-column: 6; grid-row: 2;">
                 <h3>Parkplatz 4</h3>
-                <p>Status: <span class="status" id="status-4">Frei</span></p>
+                <p>Status:</p>
+                <h1><span class="status" id="status-4">Frei</span></h1>
                 <button class="park-button" onclick="park(4)">Parken</button>
                 <button class="leave-button" onclick="leave(4)">Verlassen</button>
             </div>
 
             <!-- Pfeil1 nach rechts -->
-            <div class="pfeil-rechts" style="grid-column: 5; grid-row: 1;">➡</div>
+            <!-- <div class="pfeil-rechts" style="grid-column: 5; grid-row: 1;">➡</div> -->
 
             <!-- Pfeil2 nach rechts -->
-            <div class="pfeil-rechts" style="grid-column: 6; grid-row: 1;">➡</div>
+            <!-- <div class="pfeil-rechts" style="grid-column: 6; grid-row: 1;">➡</div> -->
 
             <!-- Pfeil3 nach rechts -->
             <div class="pfeil-rechts" style="grid-column: 5; grid-row: 3;">➡</div>
@@ -68,7 +75,7 @@
             <div class="pfeil-rechts" style="grid-column: 6; grid-row: 3;">➡</div>
 
             <!-- Fahrweg1 -->
-            <div class="fahrweg" style="grid-column: 1 / 8; grid-row: 1;">Fahrweg</div>
+            <!-- <div class="fahrweg" style="grid-column: 1 / 8; grid-row: 1;">Fahrweg</div> -->
 
             <!-- Fahrweg2 -->
             <div class="fahrweg" style="grid-column: 4; grid-row: 2;">Fahrweg</div>
@@ -80,4 +87,5 @@
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
+
 </html>
