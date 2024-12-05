@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+// Eigene Timer Klasse um Code regelmäßig ohne delay auszuführen
 class Timer {
  private:
   unsigned long startTime;
