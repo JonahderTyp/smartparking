@@ -6,7 +6,7 @@ from aiocoap import *
 async def get_booleans():
     context = await Context.create_client_context()
 
-    request = Message(code=GET, uri="coap://localhost/boolean")
+    request = Message(code=GET, uri="coap://192.168.0.100/boolean")
     response = await context.request(request).response
 
     print("Received:")
