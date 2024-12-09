@@ -5,9 +5,9 @@
 // #define TESTING
 
 // Konfiguriere WLAN Zugangsdaten
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
+const char* ssid = "smart";
+const char* password = "11111111";
 
 // Konfiguriere CoAP Server
-const char* coap_server_str = "172.16.2.107";
+const char* coap_server_str = "192.168.0.100";
 const int coap_port = 5683;

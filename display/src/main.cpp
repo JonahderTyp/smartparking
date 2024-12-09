@@ -10,15 +10,14 @@
 #include "config.h"
 #include "timer.h"
 
-// IP address of the CoAP server
+// IP Adresse des CoAP servers
 IPAddress ip;
 
 // Timer für die Aktualisierung der Daten
 Timer coapTimer(3000);
 
-// UDP object for CoAP communication
+// UDP Object und coap für die CoAP communication
 WiFiUDP udp;
-// CoAP object
 Coap coap(udp);
 
 // LCD object
@@ -40,6 +39,8 @@ void handleCoapResponse(CoapPacket &packet, IPAddress ip, int port) {
   // Debug output
   Serial.println("Response from server:");
   Serial.println(payload);
+  Serial.println(packet.code);
+  Serial.println(packet.messageid);
 
   // Parse the response into variables
   int startIndex = 0;
@@ -78,6 +79,8 @@ void handleCoapResponse(CoapPacket &packet, IPAddress ip, int port) {
   if (!p4) {
     available_bays++;
   }
+  Serial.print("Available bays: ");
+  Serial.println(available_bays);
 }
 
 void setup() {
@@ -93,10 +96,6 @@ void setup() {
 
   lcd.setCursor(0, 0);
   lcd.print("Warte auf WLAN");
-
-  // Falls TESTING definiert ist, wird der folgende Code nicht ausgeführt
-  // und stattdessen werden Demo Daten auf dem LCD ausgegeben
-#ifndef TESTING
 
   // Verbinde mit WLAN
   WiFi.begin(ssid, password);
@@ -147,7 +146,6 @@ void setup() {
 
   // Starte den CoAP Timer
   coapTimer.start();
-#endif
 }
 
 void loop() {
@@ -158,21 +156,24 @@ void loop() {
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Parken Gleis 13:");
-    lcd.setCursor(16 - 4 - 2, 1);
-    lcd.print(available_bays);
-    lcd.setCursor(16 - 4, 1);
-    lcd.print("Frei");
+    if (available_bays > 0) {
+      lcd.setCursor(16 - 4 - 2, 1);
+      lcd.print(available_bays);
+      lcd.setCursor(16 - 4, 1);
+      lcd.print("Frei");
+    } else {
+      lcd.setCursor(16 - 6, 1);
+      lcd.print("Belegt");
+    }
   }
-
-#ifndef TESTING
 
   // Aktualisiere die CoAP Daten
   if (coapTimer.hasElapsed()) {
     coapTimer.start();
+    Serial.println("Getting CoAP data");
     coap.get(ip, coap_port, "boolean");
   }
 
   // Wird benötigt damit die coap-bib die Antwort verarbeiten kann
   coap.loop();
-#endif
 }
