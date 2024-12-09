@@ -1,7 +1,8 @@
 {
-    "C_Cpp.clang_format_fallbackStyle": "Google",
+    "C_Cpp.clang_format_fallbackStyle": "none",
     "C_Cpp.clang_format_style": "Google",
     "files.associations": {
         "*.tcc": "cpp"
-    }
+    },
+    "C_Cpp.formatting": "default"
 }

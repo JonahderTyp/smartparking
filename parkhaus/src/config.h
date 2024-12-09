@@ -1,17 +1,16 @@
 #include <Arduino.h>
 
-#define TESTING
+// #define TESTING
 
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
+// Konfiguriere Wlan
+const char* ssid = "smart";
+const char* password = "11111111";
 
-const char* coap_server_str = "jonahwille.de";
-
+// Konfiguriere CoAP-Server
+const char* coap_server_str = "192.168.0.100";
 const int coap_port = 5683;
 
-// echo 23, 22, 21, 19
-// trig 18, 5, 17, 16
-
+// Konfiguriere Pins der Ultraschallsensoren
 #define US_1_TRIG 16
 #define US_1_ECHO 22
 
@@ -24,10 +23,13 @@ const int coap_port = 5683;
 #define US_4_TRIG 17
 #define US_4_ECHO 19
 
+// Konfiguriere Pins der WS2812b LEDs
 #define LED_PIN 15
 
+// Konfiguriere Pins der Richtungsanzeige (LED Matrix)
 #define AL_PIN 32
 #define AR_PIN 33
 
+// Konfiguriere Pins des Buttons und Servos
 #define BTN_PIN 25
 #define SERVO_PIN 26
